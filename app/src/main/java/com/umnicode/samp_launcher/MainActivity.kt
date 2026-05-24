@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Window
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 
@@ -24,15 +26,24 @@ class MainActivity : AppCompatActivity() {
         super.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.getSupportActionBar()?.hide();
 
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        // Принудительно ставим горизонтальный режим
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
-        // Теперь здесь только загрузка нашего чистого activity_main.xml
         setContentView(R.layout.activity_main)
+
+        // Обработка кнопки "Играть"
+        findViewById<Button>(R.id.button_play).setOnClickListener {
+            Toast.makeText(this, "Запуск игры...", Toast.LENGTH_SHORT).show()
+        }
+
+        // Обработка кнопки "Настройки"
+        findViewById<Button>(R.id.button_settings).setOnClickListener {
+            Toast.makeText(this, "Открываем настройки...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus);
-
         if (hasFocus){
             (this.applicationContext as LauncherApplication).Installer.ReCheckInstallResources(this);
         }
@@ -64,7 +75,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         for (i in permissions.indices) {
             for (Index in PermissionRequests.indices) {
                 if (PermissionRequests[Index].Permission === permissions[i]) {
@@ -79,8 +89,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun RequestStoragePermission(Callback: PermissionRequestCallback) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             this.RequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, PermissionRequestCallback { IsGrantedW ->
                 this.RequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, PermissionRequestCallback { IsGrantedR ->
                     Callback.Finished(IsGrantedR && IsGrantedW);
@@ -89,15 +98,5 @@ class MainActivity : AppCompatActivity() {
         } else {
             Callback.Finished(true);
         }
-    }
-
-    fun IsStorageReadPermissionsGranted() : Boolean{
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-    fun IsStorageWritePermissionsGranted() : Boolean{
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-    fun IsStoragePermissionsGranted() : Boolean {
-        return this.IsStorageReadPermissionsGranted() && this.IsStorageWritePermissionsGranted();
     }
 }
