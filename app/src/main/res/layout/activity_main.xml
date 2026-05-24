@@ -41,4 +41,8 @@
         android:textStyle="bold"
         android:padding="18dp" />
 
+<<<<<<< HEAD
 </RelativeLayout>
+=======
+</RelativeLayout>
+>>>>>>> 7eeec1dfa2f5425ba7bbb64801708c5857521efd
